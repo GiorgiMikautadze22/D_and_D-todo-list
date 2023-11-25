@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useTodoContext } from "../Context";
 
 const StyledForm = styled.form`
   display: flex;
@@ -44,13 +45,9 @@ const StyledGroupButton = styled.button`
   }
 `;
 
-interface Props {
-  input: string;
-  setInput: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: (e: React.FormEvent) => void;
-}
+const NewGroupInput = () => {
+  const { handleSubmit, setInput, input } = useTodoContext();
 
-const NewGroupInput = ({ input, setInput, handleSubmit }: Props) => {
   return (
     <StyledForm onSubmit={handleSubmit}>
       <StyledGroupInput
