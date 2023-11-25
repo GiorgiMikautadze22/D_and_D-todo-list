@@ -1,4 +1,10 @@
-import { ReactNode, createContext, useContext, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Group, TodoContextType, Todo } from "./types";
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -8,27 +14,39 @@ interface TodoProviderProps {
 }
 
 export function TodoProvider({ children }: TodoProviderProps) {
-  const [group, setGroup] = useState<Group[]>([]);
+  const [group, setGroup] = useState<Group[]>(() => {
+    const storedGroup = localStorage.getItem("todoGroup");
+    return storedGroup ? JSON.parse(storedGroup) : [];
+  });
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trinmmedGroupInput = input.trim();
-    if (trinmmedGroupInput.length > 0) {
-      setGroup([
+    const trimmedGroupInput = input.trim();
+    if (trimmedGroupInput.length > 0) {
+      const newGroup = [
         ...group,
         {
-          id: group.length + 1,
-          text: trinmmedGroupInput,
+          id: Math.random(),
+          text: trimmedGroupInput,
         },
-      ]);
+      ];
+      setGroup(newGroup);
+
+      localStorage.setItem("todoGroup", JSON.stringify(newGroup));
     }
+
     setInput("");
   };
 
   const handleDelete = (id: number) => {
-    setGroup(group.filter((item) => item.id !== id));
-    // alert(` ${groupName} has been deleted`)
+    setGroup((prevGroup) => {
+      const updatedGroup = prevGroup.filter((item) => item.id !== id);
+
+      localStorage.setItem("todoGroup", JSON.stringify(updatedGroup));
+
+      return updatedGroup;
+    });
   };
 
   return (

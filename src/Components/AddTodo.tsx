@@ -17,28 +17,31 @@ const TodoInput = styled.input`
 
   &:focus {
     transform: scale(1.2);
-    box-shadow: 0px 0px 100000px 1000px #3191ffbd;
+    box-shadow: 0px 0px 100000px 100000px #3191ffbd;
   }
 `;
 
 const AddTodo = () => {
-  // const { addNewTodo, setTodo, todo } = useTodoContext();
-
   const [todo, setTodo] = useState<string>("");
-  const [todoList, setTodoList] = useState<Todo[]>([]);
+  const [todoList, setTodoList] = useState<Todo[]>(() => {
+    const storedTodos = localStorage.getItem("todo");
+    return storedTodos ? JSON.parse(storedTodos) : [];
+  });
 
   const addNewTodo = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedTodo = todo.trim();
     if (trimmedTodo.length > 0) {
-      setTodoList([
+      const newTodo = [
         ...todoList,
         {
-          id: todoList.length + 1,
+          id: Math.random(),
           text: todo,
           isCompleted: false,
         },
-      ]);
+      ];
+      setTodoList(newTodo);
+      localStorage.setItem("todo", JSON.stringify(newTodo));
     }
     setTodo("");
   };
