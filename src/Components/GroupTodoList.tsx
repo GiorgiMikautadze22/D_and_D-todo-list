@@ -21,63 +21,69 @@ const TodoList = styled.div`
 `;
 
 interface Props {
-  todoList: Todo[];
   handleTodoDelete: (id: number) => void;
   handleCheckboxChange: (id: number) => void;
   handleTodoCopy: (id: number) => void;
+  singleTodo: Todo;
 }
 
 const GroupTodoList = ({
-  todoList,
   handleTodoDelete,
   handleCheckboxChange,
   handleTodoCopy,
+  singleTodo,
 }: Props) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      {todoList.map((todo) => (
-        <TodoList>
-          <div style={{ display: "flex", gap: "10px" }}>
+      <TodoList>
+        <div style={{ display: "flex", gap: "10px" }}>
+          {singleTodo.isCompleted ? (
             <input
               type="checkbox"
-              onChange={() => handleCheckboxChange(todo.id)}
+              onChange={() => handleCheckboxChange(singleTodo.id)}
+              checked
             />
-            <p
-              style={{
-                display: "flex",
-                margin: "auto 0px",
-                textDecoration: todo.isCompleted ? "line-through" : "none",
-              }}
-            >
-              {todo.text}
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <img
-              style={{
-                width: "20px",
-                height: "20px",
-                display: "flex",
-                margin: "auto 0px",
-              }}
-              onClick={() => handleTodoCopy(todo.id)}
-              src="https://static.thenounproject.com/png/4058382-200.png"
-              alt=""
+          ) : (
+            <input
+              type="checkbox"
+              onChange={() => handleCheckboxChange(singleTodo.id)}
             />
-            <img
-              style={{
-                width: "20px",
-                height: "20px",
-                display: "flex",
-                margin: "auto 0px",
-              }}
-              src="https://cdn-icons-png.flaticon.com/512/5974/5974771.png"
-              alt=""
-              onClick={() => handleTodoDelete(todo.id)}
-            />
-          </div>
-        </TodoList>
-      ))}
+          )}
+          <p
+            style={{
+              display: "flex",
+              margin: "auto 0px",
+              textDecoration: singleTodo.isCompleted ? "line-through" : "none",
+            }}
+          >
+            {singleTodo.text}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <img
+            style={{
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              margin: "auto 0px",
+            }}
+            onClick={() => handleTodoCopy(singleTodo.id)}
+            src="https://static.thenounproject.com/png/4058382-200.png"
+            alt=""
+          />
+          <img
+            style={{
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              margin: "auto 0px",
+            }}
+            src="https://cdn-icons-png.flaticon.com/512/5974/5974771.png"
+            alt=""
+            onClick={() => handleTodoDelete(singleTodo.id)}
+          />
+        </div>
+      </TodoList>
     </div>
   );
 };

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import GroupTodoList from "./GroupTodoList";
 import { useTodoContext } from "../Context";
 import DeleteButtonChip from "./DeleteButtonChip";
 import AddTodo from "./AddTodo";
+import InputForm from "./InputForm";
 
 const GroupsSection = styled.div`
   display: grid;
@@ -47,6 +48,7 @@ const Groups = () => {
             <h3>{el.text}</h3>
             <DeleteButtonChip el={el} />
           </GroupName>
+
           <AddTodo />
         </GroupCard>
       ))}
