@@ -29,9 +29,11 @@ export function TodoProvider({ children }: TodoProviderProps) {
         {
           id: Math.random(),
           text: trimmedGroupInput,
+          todos: [],
         },
       ];
       setGroup(newGroup);
+      console.log(group);
 
       localStorage.setItem("todoGroup", JSON.stringify(newGroup));
     }
@@ -57,6 +59,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
         input,
         setInput,
         handleDelete,
+        setGroup,
       }}
     >
       {children}

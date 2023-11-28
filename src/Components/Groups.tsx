@@ -4,7 +4,6 @@ import GroupTodoList from "./GroupTodoList";
 import { useTodoContext } from "../Context";
 import DeleteButtonChip from "./DeleteButtonChip";
 import AddTodo from "./AddTodo";
-import InputForm from "./InputForm";
 
 const GroupsSection = styled.div`
   display: grid;
@@ -42,14 +41,14 @@ const Groups = () => {
 
   return (
     <GroupsSection>
-      {group.map((el) => (
-        <GroupCard>
+      {group.map((el, index) => (
+        <GroupCard key={index}>
           <GroupName>
             <h3>{el.text}</h3>
             <DeleteButtonChip el={el} />
           </GroupName>
 
-          <AddTodo />
+          <AddTodo el={el} />
         </GroupCard>
       ))}
     </GroupsSection>
