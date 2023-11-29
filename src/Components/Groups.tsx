@@ -7,9 +7,10 @@ import AddTodo from "./AddTodo";
 
 const GroupsSection = styled.div`
   display: grid;
+  justify-content: center;
   grid-template-columns: auto auto auto;
-  gap: 50px;
-  margin: 100px 10%;
+  gap: 75px;
+  margin: 100px 0px;
 `;
 
 const GroupName = styled.h2`

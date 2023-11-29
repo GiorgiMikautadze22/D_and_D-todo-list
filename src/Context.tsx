@@ -15,7 +15,7 @@ interface TodoProviderProps {
 
 export function TodoProvider({ children }: TodoProviderProps) {
   const [group, setGroup] = useState<Group[]>(() => {
-    const storedGroup = localStorage.getItem("todoGroup");
+    const storedGroup = localStorage.getItem("group");
     return storedGroup ? JSON.parse(storedGroup) : [];
   });
   const [input, setInput] = useState("");
@@ -23,7 +23,11 @@ export function TodoProvider({ children }: TodoProviderProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedGroupInput = input.trim();
-    if (trimmedGroupInput.length > 0) {
+
+    const groupIndex = group.findIndex((g) => g.text === trimmedGroupInput);
+    console.log(groupIndex);
+
+    if (trimmedGroupInput.length > 0 && groupIndex === -1) {
       const newGroup = [
         ...group,
         {
@@ -35,7 +39,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
       setGroup(newGroup);
       console.log(group);
 
-      localStorage.setItem("todoGroup", JSON.stringify(newGroup));
+      localStorage.setItem("group", JSON.stringify(newGroup));
     }
 
     setInput("");
@@ -45,7 +49,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
     setGroup((prevGroup) => {
       const updatedGroup = prevGroup.filter((item) => item.id !== id);
 
-      localStorage.setItem("todoGroup", JSON.stringify(updatedGroup));
+      localStorage.setItem("group", JSON.stringify(updatedGroup));
 
       return updatedGroup;
     });

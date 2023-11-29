@@ -30,11 +30,6 @@ const AddTodo = ({ el }: Props) => {
 
   const [todo, setTodo] = useState<string>("");
 
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    const storedTodos = localStorage.getItem("todo");
-    return storedTodos ? JSON.parse(storedTodos) : [];
-  });
-
   const addNewTodo = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedTodo = todo.trim();
@@ -49,7 +44,7 @@ const AddTodo = ({ el }: Props) => {
       updatedGroups[groupIndex].todos.push(newTodo);
       setGroup(updatedGroups);
 
-      localStorage.setItem("group", JSON.stringify(group));
+      localStorage.setItem("group", JSON.stringify(updatedGroups));
     }
 
     setTodo("");
@@ -64,29 +59,35 @@ const AddTodo = ({ el }: Props) => {
   };
 
   const handleCheckboxChange = (id: number) => {
-    setTodos((prevTodoList) => {
-      const uptadetTodoList = prevTodoList.map((item) =>
+    const updatedGroups = [...group];
+    const groupIndex = updatedGroups.findIndex((g) => g.text === el.text);
+
+    updatedGroups[groupIndex].todos = updatedGroups[groupIndex].todos.map(
+      (item) =>
         item.id === id ? { ...item, isCompleted: !item.isCompleted } : item
-      );
-      localStorage.setItem("todo", JSON.stringify(uptadetTodoList));
-      return uptadetTodoList;
-    });
+    );
+
+    setGroup(updatedGroups);
+    localStorage.setItem("group", JSON.stringify(updatedGroups));
   };
 
   const handleTodoCopy = (id: number) => {
-    const todoToCopy = todos.find((todo) => todo.id === id);
-
+    const updatedGroups = [...group];
+    const groupIndex = updatedGroups.findIndex((g) => g.text === el.text);
+    const todoToCopy = updatedGroups[groupIndex].todos.find(
+      (todo) => todo.id === id
+    );
     if (todoToCopy) {
-      const uptadetTodoList = [
-        ...todos,
+      updatedGroups[groupIndex].todos = [
+        ...updatedGroups[groupIndex].todos,
         {
           id: Math.random(),
           text: todoToCopy.text,
           isCompleted: false,
         },
       ];
-      setTodos(uptadetTodoList);
-      localStorage.setItem("todo", JSON.stringify(uptadetTodoList));
+      setGroup(updatedGroups);
+      localStorage.setItem("group", JSON.stringify(group));
     }
   };
 
@@ -100,7 +101,7 @@ const AddTodo = ({ el }: Props) => {
           value={todo}
         />
       </form>
-      {todos
+      {el
         ? el.todos.map((singleTodo, index) => (
             <GroupTodoList
               key={index}
