@@ -55,6 +55,8 @@ export function TodoProvider({ children }: TodoProviderProps) {
     });
   };
 
+  const handleDragAndDrop = () => {};
+
   return (
     <TodoContext.Provider
       value={{
@@ -64,6 +66,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
         setInput,
         handleDelete,
         setGroup,
+        handleDragAndDrop,
       }}
     >
       {children}

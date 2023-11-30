@@ -4,6 +4,7 @@ import GroupTodoList from "./GroupTodoList";
 import { useTodoContext } from "../Context";
 import DeleteButtonChip from "./DeleteButtonChip";
 import AddTodo from "./AddTodo";
+import { DragDropContext } from "react-beautiful-dnd";
 
 const GroupsSection = styled.div`
   display: grid;
@@ -38,20 +39,22 @@ const GroupCard = styled.div`
 `;
 
 const Groups = () => {
-  const { group } = useTodoContext();
+  const { group, handleDragAndDrop } = useTodoContext();
 
   return (
     <GroupsSection>
-      {group.map((el, index) => (
-        <GroupCard key={index}>
-          <GroupName>
-            <h3>{el.text}</h3>
-            <DeleteButtonChip el={el} />
-          </GroupName>
+      <DragDropContext onDragEnd={handleDragAndDrop}>
+        {group.map((el, index) => (
+          <GroupCard key={index}>
+            <GroupName>
+              <h3>{el.text}</h3>
+              <DeleteButtonChip el={el} />
+            </GroupName>
 
-          <AddTodo el={el} />
-        </GroupCard>
-      ))}
+            <AddTodo el={el} />
+          </GroupCard>
+        ))}
+      </DragDropContext>
     </GroupsSection>
   );
 };

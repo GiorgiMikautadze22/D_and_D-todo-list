@@ -109,6 +109,7 @@ const AddTodo = ({ el }: Props) => {
               handleCheckboxChange={handleCheckboxChange}
               handleTodoCopy={handleTodoCopy}
               singleTodo={singleTodo}
+              index={index}
             />
           ))
         : null}
