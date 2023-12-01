@@ -1,10 +1,8 @@
-import React, { useState } from "react";
 import styled from "styled-components";
-import GroupTodoList from "./GroupTodoList";
 import { useTodoContext } from "../Context";
 import DeleteButtonChip from "./DeleteButtonChip";
 import AddTodo from "./AddTodo";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 const GroupsSection = styled.div`
   display: grid;
@@ -14,7 +12,7 @@ const GroupsSection = styled.div`
   margin: 100px 0px;
 `;
 
-const GroupName = styled.h2`
+const GroupName = styled.div`
   display: flex;
   justify-content: space-between;
   border-radius: 8px;
@@ -39,23 +37,66 @@ const GroupCard = styled.div`
 `;
 
 const Groups = () => {
-  const { group, handleDragAndDrop } = useTodoContext();
+  const { group, setGroup } = useTodoContext();
+
+  const handleGroupDragAndDrop = (results: any) => {
+    const { source, destination, type } = results;
+
+    if (!destination) return;
+
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
+
+    if (type === "group") {
+      const reOrderedGroups = [...group];
+
+      const sourceIndex = source.index;
+      const destinationIndex = destination.index;
+
+      const [removedTodo] = reOrderedGroups.splice(sourceIndex, 1);
+      reOrderedGroups.splice(destinationIndex, 0, removedTodo);
+
+      return setGroup(reOrderedGroups);
+    }
+
+    localStorage.setItem("group", JSON.stringify(group));
+  };
 
   return (
-    <GroupsSection>
-      <DragDropContext onDragEnd={handleDragAndDrop}>
-        {group.map((el, index) => (
-          <GroupCard key={index}>
-            <GroupName>
-              <h3>{el.text}</h3>
-              <DeleteButtonChip el={el} />
-            </GroupName>
+    <DragDropContext onDragEnd={handleGroupDragAndDrop}>
+      <Droppable droppableId="ROOT" type="group" direction="horizontal">
+        {(provided) => (
+          <GroupsSection ref={provided.innerRef} {...provided.droppableProps}>
+            {group.map((el, index) => (
+              <Draggable
+                draggableId={`group-${el.id}`}
+                key={el.id}
+                index={index}
+              >
+                {(provided) => (
+                  <GroupCard
+                    key={index}
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                  >
+                    <GroupName {...provided.dragHandleProps}>
+                      <h2>{el.text}</h2>
+                      <DeleteButtonChip el={el} />
+                    </GroupName>
 
-            <AddTodo el={el} />
-          </GroupCard>
-        ))}
-      </DragDropContext>
-    </GroupsSection>
+                    <AddTodo el={el} />
+                  </GroupCard>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </GroupsSection>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 

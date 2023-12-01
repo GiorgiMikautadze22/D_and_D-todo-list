@@ -1,10 +1,4 @@
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { ReactNode, createContext, useContext, useState } from "react";
 import { Group, TodoContextType, Todo } from "./types";
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -25,7 +19,6 @@ export function TodoProvider({ children }: TodoProviderProps) {
     const trimmedGroupInput = input.trim();
 
     const groupIndex = group.findIndex((g) => g.text === trimmedGroupInput);
-    console.log(groupIndex);
 
     if (trimmedGroupInput.length > 0 && groupIndex === -1) {
       const newGroup = [
@@ -37,9 +30,12 @@ export function TodoProvider({ children }: TodoProviderProps) {
         },
       ];
       setGroup(newGroup);
-      console.log(group);
 
       localStorage.setItem("group", JSON.stringify(newGroup));
+    } else if (groupIndex !== -1) {
+      alert("Group with that name already exists");
+    } else if (trimmedGroupInput.length === 0) {
+      alert("Please provide valid name");
     }
 
     setInput("");
@@ -55,8 +51,6 @@ export function TodoProvider({ children }: TodoProviderProps) {
     });
   };
 
-  const handleDragAndDrop = () => {};
-
   return (
     <TodoContext.Provider
       value={{
@@ -66,7 +60,6 @@ export function TodoProvider({ children }: TodoProviderProps) {
         setInput,
         handleDelete,
         setGroup,
-        handleDragAndDrop,
       }}
     >
       {children}

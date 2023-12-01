@@ -17,5 +17,4 @@ export interface TodoContextType {
   setInput: React.Dispatch<React.SetStateAction<string>>;
   handleDelete: (id: number) => void;
   setGroup: React.Dispatch<React.SetStateAction<Group[]>>;
-  handleDragAndDrop: () => void;
 }

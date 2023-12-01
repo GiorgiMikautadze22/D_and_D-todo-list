@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useTodoContext } from "../Context";
 import styled from "styled-components";
-import { Group, Todo } from "../types";
+import { Group } from "../types";
 import GroupTodoList from "./GroupTodoList";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 const TodoInput = styled.input`
   height: 35px;
@@ -71,23 +72,53 @@ const AddTodo = ({ el }: Props) => {
     localStorage.setItem("group", JSON.stringify(updatedGroups));
   };
 
-  const handleTodoCopy = (id: number) => {
+  const handleTodoCopy = (id: number, index: number) => {
     const updatedGroups = [...group];
     const groupIndex = updatedGroups.findIndex((g) => g.text === el.text);
     const todoToCopy = updatedGroups[groupIndex].todos.find(
       (todo) => todo.id === id
     );
+
     if (todoToCopy) {
-      updatedGroups[groupIndex].todos = [
-        ...updatedGroups[groupIndex].todos,
-        {
-          id: Math.random(),
-          text: todoToCopy.text,
-          isCompleted: false,
-        },
-      ];
+      const copiedTodo = {
+        id: Math.random(),
+        text: todoToCopy.text,
+        isCompleted: false,
+      };
+
+      updatedGroups[groupIndex].todos.splice(index + 1, 0, copiedTodo);
+
       setGroup(updatedGroups);
+      localStorage.setItem("group", JSON.stringify(updatedGroups));
+    }
+  };
+
+  const handleDragAndDrop = (results: any) => {
+    const { source, destination, type } = results;
+
+    if (!destination) return;
+
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
+
+    if (type === "todolist") {
+      const updatedGroups = [...group];
+      const groupIndex = updatedGroups.findIndex((g) => g.text === el.text);
+
+      const sourceIndex = source.index;
+      const destinationIndex = destination.index;
+
+      const [removedTodo] = updatedGroups[groupIndex].todos.splice(
+        sourceIndex,
+        1
+      );
+      updatedGroups[groupIndex].todos.splice(destinationIndex, 0, removedTodo);
       localStorage.setItem("group", JSON.stringify(group));
+
+      return setGroup(updatedGroups);
     }
   };
 
@@ -101,18 +132,35 @@ const AddTodo = ({ el }: Props) => {
           value={todo}
         />
       </form>
-      {el
-        ? el.todos.map((singleTodo, index) => (
-            <GroupTodoList
-              key={index}
-              handleTodoDelete={() => handleTodoDelete(index)}
-              handleCheckboxChange={handleCheckboxChange}
-              handleTodoCopy={handleTodoCopy}
-              singleTodo={singleTodo}
-              index={index}
-            />
-          ))
-        : null}
+      <DragDropContext onDragEnd={handleDragAndDrop}>
+        <Droppable droppableId={el.text} type="todolist">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              {el
+                ? el.todos.map((singleTodo, index) => (
+                    <GroupTodoList
+                      key={index}
+                      handleTodoDelete={() => handleTodoDelete(index)}
+                      handleCheckboxChange={handleCheckboxChange}
+                      handleTodoCopy={handleTodoCopy}
+                      singleTodo={singleTodo}
+                      index={index}
+                    />
+                  ))
+                : null}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </>
   );
 };
